@@ -2,7 +2,9 @@ import { resumes } from "../../constants";
 import type { Route } from "./+types/home";
 import Navbar from "~/components/Navbar";
 import ResumeCard from "~/components/ResumeCard";
-
+import { usePuterStore } from "../../lib/puter";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router";
 
 
 export function meta({}: Route.MetaArgs) {
@@ -13,6 +15,16 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
+  const { isLoading, auth, puterReady } = usePuterStore();
+  
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Only redirect if puter is ready and we're not loading and user is not authenticated
+        if(puterReady && !isLoading && !auth.isAuthenticated) {
+            navigate('/auth?next=/home');
+        }
+    }, [auth.isAuthenticated, puterReady, isLoading])
   return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
   <Navbar />
   
